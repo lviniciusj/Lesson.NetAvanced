@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using BibliotecaMVC.Data;
 
 namespace BibliotecaMVC.Data.Migrations
 {
@@ -15,8 +13,160 @@ namespace BibliotecaMVC.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.0-rc3")
+                .HasAnnotation("ProductVersion", "1.0.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("BibliotecaMVC.Models.ApplicationUser", b =>
+                {
+                    b.Property<string>("Id");
+
+                    b.Property<int>("AccessFailedCount");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken();
+
+                    b.Property<string>("Email")
+                        .HasAnnotation("MaxLength", 256);
+
+                    b.Property<bool>("EmailConfirmed");
+
+                    b.Property<bool>("LockoutEnabled");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasAnnotation("MaxLength", 256);
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasAnnotation("MaxLength", 256);
+
+                    b.Property<string>("PasswordHash");
+
+                    b.Property<string>("PhoneNumber");
+
+                    b.Property<bool>("PhoneNumberConfirmed");
+
+                    b.Property<string>("SecurityStamp");
+
+                    b.Property<bool>("TwoFactorEnabled");
+
+                    b.Property<string>("UserName")
+                        .HasAnnotation("MaxLength", 256);
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasName("UserNameIndex");
+
+                    b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("BibliotecaMVC.Models.Autor", b =>
+                {
+                    b.Property<int>("AutorID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasAnnotation("MaxLength", 100);
+
+                    b.HasKey("AutorID");
+
+                    b.ToTable("Autor");
+                });
+
+            modelBuilder.Entity("BibliotecaMVC.Models.Emprestimo", b =>
+                {
+                    b.Property<int>("EmprestimoID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("DataDevolucao");
+
+                    b.Property<string>("DataFim");
+
+                    b.Property<string>("DataInicio");
+
+                    b.Property<int>("UsuarioID");
+
+                    b.HasKey("EmprestimoID");
+
+                    b.HasIndex("UsuarioID");
+
+                    b.ToTable("Emprestimo");
+                });
+
+            modelBuilder.Entity("BibliotecaMVC.Models.Livro", b =>
+                {
+                    b.Property<int>("LivroID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Foto");
+
+                    b.Property<int>("Quantidade");
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasAnnotation("MaxLength", 200);
+
+                    b.HasKey("LivroID");
+
+                    b.ToTable("Livro");
+                });
+
+            modelBuilder.Entity("BibliotecaMVC.Models.LivroAutor", b =>
+                {
+                    b.Property<int>("AutorID");
+
+                    b.Property<int>("LivroID");
+
+                    b.HasKey("AutorID", "LivroID");
+
+                    b.HasIndex("AutorID");
+
+                    b.HasIndex("LivroID");
+
+                    b.ToTable("LivroAutor");
+                });
+
+            modelBuilder.Entity("BibliotecaMVC.Models.LivroEmprestimo", b =>
+                {
+                    b.Property<int>("LivroID");
+
+                    b.Property<int>("EmprestimoID");
+
+                    b.HasKey("LivroID", "EmprestimoID");
+
+                    b.HasIndex("EmprestimoID");
+
+                    b.HasIndex("LivroID");
+
+                    b.ToTable("LivroEmprestimo");
+                });
+
+            modelBuilder.Entity("BibliotecaMVC.Models.Usuario", b =>
+                {
+                    b.Property<int>("UsuarioID")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Email")
+                        .IsRequired();
+
+                    b.Property<string>("Nome")
+                        .IsRequired();
+
+                    b.Property<string>("Senha")
+                        .IsRequired();
+
+                    b.Property<string>("Telefone");
+
+                    b.HasKey("UsuarioID");
+
+                    b.ToTable("Usuario");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
                 {
@@ -125,53 +275,38 @@ namespace BibliotecaMVC.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("BibliotecaMVC.Models.ApplicationUser", b =>
+            modelBuilder.Entity("BibliotecaMVC.Models.Emprestimo", b =>
                 {
-                    b.Property<string>("Id");
+                    b.HasOne("BibliotecaMVC.Models.Usuario", "Usuario")
+                        .WithMany("Emprestimo")
+                        .HasForeignKey("UsuarioID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.Property<int>("AccessFailedCount");
+            modelBuilder.Entity("BibliotecaMVC.Models.LivroAutor", b =>
+                {
+                    b.HasOne("BibliotecaMVC.Models.Autor", "Autor")
+                        .WithMany("LivroAutor")
+                        .HasForeignKey("AutorID")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                    b.HasOne("BibliotecaMVC.Models.Livro", "Livro")
+                        .WithMany("LivroAutor")
+                        .HasForeignKey("LivroID")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
 
-                    b.Property<string>("Email")
-                        .HasAnnotation("MaxLength", 256);
+            modelBuilder.Entity("BibliotecaMVC.Models.LivroEmprestimo", b =>
+                {
+                    b.HasOne("BibliotecaMVC.Models.Emprestimo", "Emprestimo")
+                        .WithMany("LivroEmprestimo")
+                        .HasForeignKey("EmprestimoID")
+                        .OnDelete(DeleteBehavior.Cascade);
 
-                    b.Property<bool>("EmailConfirmed");
-
-                    b.Property<bool>("LockoutEnabled");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasAnnotation("MaxLength", 256);
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasAnnotation("MaxLength", 256);
-
-                    b.Property<string>("PasswordHash");
-
-                    b.Property<string>("PhoneNumber");
-
-                    b.Property<bool>("PhoneNumberConfirmed");
-
-                    b.Property<string>("SecurityStamp");
-
-                    b.Property<bool>("TwoFactorEnabled");
-
-                    b.Property<string>("UserName")
-                        .HasAnnotation("MaxLength", 256);
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasName("UserNameIndex");
-
-                    b.ToTable("AspNetUsers");
+                    b.HasOne("BibliotecaMVC.Models.Livro", "Livro")
+                        .WithMany("LivroEmprestimo")
+                        .HasForeignKey("LivroID")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

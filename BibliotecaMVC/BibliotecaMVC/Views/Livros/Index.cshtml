@@ -20,20 +20,19 @@
     </div>
 </form>
 
-
 <table class="table">
     <thead>
         <tr>
             <th>
-                <a asp-action="Index" asp-route-ordenacao="@ViewBag.TituloSortParam"> @Html.DisplayNameFor(model=> model.Titulo)</a>
+                <a asp-action="Index" asp-route-ordenacao="@ViewBag.TituloSortParm">@Html.DisplayNameFor(model => model.Titulo)</a>
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Quantidade)
             </th>
-            <th></th>
+            <th>Ferramentas</th>
         </tr>
     </thead>
-<tbody>
+    <tbody>
 @foreach (var item in Model) {
         <tr>
             <td>
@@ -43,12 +42,9 @@
                 @Html.DisplayFor(modelItem => item.Quantidade)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Foto)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.LivroId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.LivroId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.LivroId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.LivroID">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.LivroID">Detalhes</a> |
+                <a asp-action="Delete" asp-route-id="@item.LivroID">Deletar</a>
             </td>
         </tr>
 }

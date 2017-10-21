@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:53549/",
+      "applicationUrl": "http://localhost:56384/",
       "sslPort": 0
     }
   },
@@ -18,10 +18,10 @@
     "BibliotecaMVC": {
       "commandName": "Project",
       "launchBrowser": true,
+      "launchUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:53550/"
+      }
     }
   }
 }

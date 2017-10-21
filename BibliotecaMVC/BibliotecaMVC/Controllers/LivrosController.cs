@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BibliotecaMVC.Data;
 using BibliotecaMVC.Models;
+using BibliotecaMVC.Utils;
 
 namespace BibliotecaMVC.Controllers
 {
@@ -22,15 +23,18 @@ namespace BibliotecaMVC.Controllers
         // GET: Livros
         public async Task<IActionResult> Index(string filtroPesquisa, string ordenacao)
         {
-            ViewBag.TituloSortParam = String.IsNullOrEmpty(ordenacao) ? "titulo_desc"
-           : "";
+            ViewBag.TituloSortParm = String.IsNullOrEmpty(ordenacao) ? "titulo_desc" : "";
+
             ViewBag.filtroPesquisa = filtroPesquisa;
+
             var livros = from l in _context.Livro
                          select l;
+
             if (!String.IsNullOrEmpty(filtroPesquisa))
             {
                 livros = livros.Where(s => s.Titulo.ToUpper().Contains(filtroPesquisa.ToUpper()));
             }
+
             switch (ordenacao)
             {
                 case "titulo_desc":
@@ -40,8 +44,9 @@ namespace BibliotecaMVC.Controllers
                     livros = livros.OrderBy(s => s.Titulo);
                     break;
             }
+
             return View(await livros.ToListAsync());
-        }
+        }
 
         // GET: Livros/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -51,8 +56,10 @@ namespace BibliotecaMVC.Controllers
                 return NotFound();
             }
 
-            var livro = await _context.Livro
-                .SingleOrDefaultAsync(m => m.LivroId == id);
+            var livro = await _context.Livro.AsNoTracking()
+                                .Include(l => l.LivroAutor)
+                                .ThenInclude(li => li.Autor)
+                                .SingleOrDefaultAsync(m => m.LivroID == id);
             if (livro == null)
             {
                 return NotFound();
@@ -64,7 +71,8 @@ namespace BibliotecaMVC.Controllers
         // GET: Livros/Create
         public IActionResult Create()
         {
-            return View();
+            ViewBag.Autores = new Listagens(_context).AutoresCheckBox();
+            return View(new Livro());
         }
 
         // POST: Livros/Create
@@ -72,10 +80,20 @@ namespace BibliotecaMVC.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("LivroId,Titulo,Quantidade,Foto")] Livro livro)
+        public async Task<IActionResult> Create([Bind("LivroID,Foto,Quantidade,Titulo,AutorUnico")] Livro livro, string[]
+selectedAutores)
         {
             if (ModelState.IsValid)
             {
+                if (selectedAutores != null)
+                {
+                    livro.LivroAutor = new List<LivroAutor>();
+                    foreach (var idAutor in selectedAutores)
+                        livro.LivroAutor.Add(new LivroAutor()
+                        {
+                            AutorID = int.Parse(idAutor), Livro = livro
+                        });
+                }
                 _context.Add(livro);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -90,37 +108,52 @@ namespace BibliotecaMVC.Controllers
             {
                 return NotFound();
             }
-
-            var livro = await _context.Livro.SingleOrDefaultAsync(m => m.LivroId == id);
+            var autoresAux = new Listagens(_context).AutoresCheckBox();
+            var livro = await _context.Livro.Include(l => l.LivroAutor).SingleOrDefaultAsync(m => m.LivroID == id);
+            autoresAux.ForEach(a => a.Checked = livro.LivroAutor.Any(l => l.AutorID == a.Value)
+            );
+            ViewBag.Autores = autoresAux;
             if (livro == null)
             {
                 return NotFound();
             }
             return View(livro);
         }
-
         // POST: Livros/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+ // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("LivroId,Titulo,Quantidade,Foto")] Livro livro)
+        public async Task<IActionResult> Edit(int id,[Bind("LivroID,Foto,Quantidade,Titulo")] Livro livro, string[] selectedAutores)
         {
-            if (id != livro.LivroId)
+            if (id != livro.LivroID)
             {
                 return NotFound();
             }
-
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var livroAutores = _context.LivroAutor.AsNoTracking().Where(la => la.LivroID == livro.LivroID);
+                    _context.LivroAutor.RemoveRange(livroAutores);
+                    await _context.SaveChangesAsync();
+                    if (selectedAutores != null)
+                {
+                        livro.LivroAutor = new List<LivroAutor>();
+                        foreach (var idAutor in selectedAutores)
+                            livro.LivroAutor.Add(new LivroAutor()
+                            {
+                                AutorID =
+                           int.Parse(idAutor),
+                                Livro = livro
+                            });
+                    }
                     _context.Update(livro);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!LivroExists(livro.LivroId))
+                    if (!LivroExists(livro.LivroID))
                     {
                         return NotFound();
                     }
@@ -142,8 +175,8 @@ namespace BibliotecaMVC.Controllers
                 return NotFound();
             }
 
-            var livro = await _context.Livro
-                .SingleOrDefaultAsync(m => m.LivroId == id);
+
+            var livro = await _context.Livro.SingleOrDefaultAsync(m => m.LivroID == id);
             if (livro == null)
             {
                 return NotFound();
@@ -157,7 +190,7 @@ namespace BibliotecaMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var livro = await _context.Livro.SingleOrDefaultAsync(m => m.LivroId == id);
+            var livro = await _context.Livro.SingleOrDefaultAsync(m => m.LivroID == id);
             _context.Livro.Remove(livro);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
@@ -165,7 +198,7 @@ namespace BibliotecaMVC.Controllers
 
         private bool LivroExists(int id)
         {
-            return _context.Livro.Any(e => e.LivroId == id);
+            return _context.Livro.Any(e => e.LivroID == id);
         }
     }
 }
