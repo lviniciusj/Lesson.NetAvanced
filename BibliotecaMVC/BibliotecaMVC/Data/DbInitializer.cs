@@ -21,7 +21,7 @@ namespace BibliotecaMVC.Data
             var livros = new Livro[]
             {
                 new Livro {Titulo = "PHP para quem conhece PHP",Quantidade = 10},
-                new Livro {Titulo = "Internet das Coisas com ESP8266, Arduino e Raspberry",Quantidade = 10},
+                new Livro {Titulo = "Internet das Coisas com Arduino e Raspberry",Quantidade = 10},
                 new Livro {Titulo = "Gamification em Help Desk e Service Desk",Quantidade = 10},
                 new Livro {Titulo = "Avaliação de segurança de redes",Quantidade = 10},
                 new Livro {Titulo = "Desenvolvendo Jogos Mobile com HTML5",Quantidade = 10}
@@ -47,7 +47,18 @@ namespace BibliotecaMVC.Data
                 context.Autor.Add(a);
             }
 
+            var usuarios = new Usuario[]
+            {
+                new Usuario { Nome = "Teste", Email = "teste@teste.com", Senha = "Abc123-" },
+                new Usuario { Nome = "admin", Telefone = "1470706969", Email = "admin@admin.com", Senha = "Admin" }
+            };
+            foreach (Usuario a in usuarios)
+            {
+               context.Usuario.Add(a);
+            }            
             context.SaveChanges();
+
+
         }
     }
 }

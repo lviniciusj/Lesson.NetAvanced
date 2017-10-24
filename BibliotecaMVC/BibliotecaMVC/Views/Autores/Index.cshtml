@@ -1,0 +1,48 @@
+@model IEnumerable<BibliotecaMVC.Models.Autor>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<form asp-action="Index" method="get">
+    <div class="form-actions no-color">
+        <p>
+            @Html.DisplayNameFor(model => model.Nome):&nbsp;<input type="text" name="filtroPesquisa" value="@ViewBag.filtroPesquisa" />
+            <input type="submit" value="Pesquisar" class="btn btn-default" /> |
+            <a asp-action="Index">Limpar</a>
+        </p>
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index" asp-route-ordenacao="@ViewBag.TituloSortParm">@Html.DisplayNameFor(model => model.Nome)</a>
+            </th>
+            <th>
+                Ferramentas
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nome)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.AutorID">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.AutorID">Detalhes</a> |
+                <a asp-action="Delete" asp-route-id="@item.AutorID">Deletar</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

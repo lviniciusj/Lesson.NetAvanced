@@ -21,5 +21,8 @@ namespace BibliotecaMVC.Models
         public string DataDevolucao { get; set; }
 
         public ICollection<LivroEmprestimo> LivroEmprestimo { get; set; }
+
+        public string ApplicationUserId { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }

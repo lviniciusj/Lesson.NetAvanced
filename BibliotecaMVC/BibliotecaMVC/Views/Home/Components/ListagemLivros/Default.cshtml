@@ -5,10 +5,9 @@
 <div class="row">
     @foreach (var item in Model)
     {
-        <div class="col-md-4">
-            <div class="card" style="width: 20rem;">
-                <img class="card-img-top"
-                     src="~/Imagens/Produtos/@item.Foto">
+        <div class="col-xs-6 col-md-3">
+            <div class="thumbnail" style="width: 20rem;">
+                <img class="card-img-top" src="~/@item.Foto">
                 <div class="card-block">
                     <h4 class="card-title">@item.Titulo</h4>
                     <p class="card-text">
@@ -16,8 +15,7 @@
                     </p>
                     <a asp-area="" asp-controller="Carrinho" aspaction="Adicionar"
                        asp-route-id="@item.LivroID" class="btn btnprimary">
-                        Add
-                        ao Carrinho
+                        Add ao Carrinho
                     </a>
                 </div>
             </div>

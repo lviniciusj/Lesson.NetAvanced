@@ -17,6 +17,7 @@ namespace BibliotecaMVC
 {
     public class Startup
     {
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -47,9 +48,11 @@ namespace BibliotecaMVC
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
             
-            services.AddMvc();
+            services.AddMvc();            
             services.AddDistributedMemoryCache();
-            services.AddSession();
+            services.AddMemoryCache();
+            //services.AddSession();
+
 
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
@@ -75,7 +78,7 @@ namespace BibliotecaMVC
             }
 
             app.UseStaticFiles();
-            app.UseSession();
+            //app.UseSession();
             app.UseIdentity();
 
             // Add external authentication middleware below. To configure them please see http://go.microsoft.com/fwlink/?LinkID=532715

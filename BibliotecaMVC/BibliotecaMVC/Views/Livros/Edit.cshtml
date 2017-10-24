@@ -6,7 +6,7 @@
 
 <h2>Edit</h2>
 
-<form asp-action="Edit">
+<form asp-action="Edit" enctype="multipart/form-data">
     <div class="form-horizontal">
         <h4>Livro</h4>
         <hr />
@@ -14,10 +14,8 @@
     <input type="hidden" asp-for="LivroID" />
         <div class="form-group">
             <label asp-for="Foto" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Foto" class="form-control" />
-                <span asp-validation-for="Foto" class="text-danger" />
-            </div>
+            <img src="~/@Model.Foto" /><br />
+            <input type="file" name="files" accept="image/*">
         </div>
         <div class="form-group">
             <label class="col-md-2 control-label">Autores</label>
